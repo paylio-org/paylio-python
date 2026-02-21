@@ -102,11 +102,18 @@ class TestErrorMapping:
         assert exc_info.value.code == "invalid_parameter"
         assert exc_info.value.message == "bad value"
 
-    def test_plain_error_body(self, client: HTTPClient, httpx_mock: HTTPXMock) -> None:
+    def test_detail_error_body(self, client: HTTPClient, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_response(status_code=400, json={"detail": "bad request"})
         with pytest.raises(InvalidRequestError) as exc_info:
             client.request("GET", "/test")
         assert exc_info.value.http_status == 400
+        assert exc_info.value.message == "bad request"
+
+    def test_string_error_body(self, client: HTTPClient, httpx_mock: HTTPXMock) -> None:
+        httpx_mock.add_response(status_code=401, json={"error": "unauthorized"})
+        with pytest.raises(AuthenticationError) as exc_info:
+            client.request("GET", "/test")
+        assert exc_info.value.message == "unauthorized"
 
 
 class TestConnectionErrors:
@@ -116,6 +123,7 @@ class TestConnectionErrors:
         with pytest.raises(APIConnectionError) as exc_info:
             client.request("GET", "/test")
         assert "connection refused" in exc_info.value.message.lower()
+        assert exc_info.value.__cause__ is None  # no chained httpx traceback
 
     def test_timeout_error(self, httpx_mock: HTTPXMock) -> None:
         httpx_mock.add_exception(httpx.ReadTimeout("timed out"))
@@ -123,6 +131,7 @@ class TestConnectionErrors:
         with pytest.raises(APIConnectionError) as exc_info:
             client.request("GET", "/test")
         assert "timed out" in exc_info.value.message.lower()
+        assert exc_info.value.__cause__ is None  # no chained httpx traceback
 
 
 class TestRequestBuilding:

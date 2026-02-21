@@ -53,9 +53,9 @@ class HTTPClient:
                 json=json_body,
             )
         except httpx.ConnectError as e:
-            raise APIConnectionError(message=f"Connection error: {e}") from e
+            raise APIConnectionError(message=f"Connection error: {e}") from None
         except httpx.TimeoutException as e:
-            raise APIConnectionError(message=f"Request timed out: {e}") from e
+            raise APIConnectionError(message=f"Request timed out: {e}") from None
 
         return self._handle_response(response)
 
@@ -86,13 +86,21 @@ class HTTPClient:
                 )
             return json_body
 
-        # Extract error details from structured error response.
+        # Extract error details — handle all backend response formats:
+        #   {"error": {"code": "...", "message": "..."}}  (public API v1)
+        #   {"error": "string"}                           (legacy API)
+        #   {"detail": "string"}                          (FastAPI / dashboard)
         error_code = None
         error_message = http_body
-        if json_body and isinstance(json_body.get("error"), dict):
-            error_data = json_body["error"]
-            error_code = error_data.get("code")
-            error_message = error_data.get("message", http_body)
+        if json_body:
+            err = json_body.get("error")
+            if isinstance(err, dict):
+                error_code = err.get("code")
+                error_message = err.get("message", http_body)
+            elif isinstance(err, str):
+                error_message = err
+            elif isinstance(json_body.get("detail"), str):
+                error_message = json_body["detail"]
 
         error_cls = _error_class_for_status(http_status)
         raise error_cls(

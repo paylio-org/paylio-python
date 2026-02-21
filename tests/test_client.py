@@ -83,4 +83,4 @@ class TestTopLevelImports:
     def test_version(self) -> None:
         import paylio
 
-        assert paylio.__version__ == "0.1.0"
+        assert paylio.__version__ == "0.1.2"
