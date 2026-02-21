@@ -43,6 +43,13 @@ class TestHeaders:
         assert req.headers["content-type"] == "application/json"
         assert req.headers["accept"] == "application/json"
 
+    def test_sends_sdk_source(self, client: HTTPClient, httpx_mock: HTTPXMock) -> None:
+        httpx_mock.add_response(json={"ok": True})
+        client.request("GET", "/test")
+        req = httpx_mock.get_request()
+        assert req is not None
+        assert req.headers["x-sdk-source"] == "python"
+
 
 class TestSuccessResponse:
     def test_returns_parsed_json(self, client: HTTPClient, httpx_mock: HTTPXMock) -> None:

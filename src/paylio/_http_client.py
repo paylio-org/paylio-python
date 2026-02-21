@@ -65,6 +65,7 @@ class HTTPClient:
             "Content-Type": "application/json",
             "Accept": "application/json",
             "User-Agent": f"paylio-python/{VERSION}",
+            "X-SDK-Source": "python",
         }
 
     def _handle_response(self, response: httpx.Response) -> dict[str, Any]:
