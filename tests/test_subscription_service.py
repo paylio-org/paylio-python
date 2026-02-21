@@ -132,6 +132,32 @@ class TestList:
         with pytest.raises(ValueError, match="user_id is required"):
             service.list("")
 
+    def test_whitespace_user_id_raises(self, service: SubscriptionService) -> None:
+        with pytest.raises(ValueError, match="user_id is required"):
+            service.list("  ")
+
+    def test_response_without_items_key(
+        self, service: SubscriptionService, mock_http: MagicMock
+    ) -> None:
+        """Backend may return response without items key — should not crash."""
+        mock_http.request.return_value = {
+            "total": 0,
+            "page": 1,
+            "page_size": 20,
+            "total_pages": 0,
+        }
+        result = service.list("user_1")
+        assert isinstance(result, PaginatedList)
+        assert result.total == 0
+
+    def test_has_more_defaults_to_false_when_fields_missing(
+        self, service: SubscriptionService, mock_http: MagicMock
+    ) -> None:
+        """has_more defaults to False when page/total_pages are missing."""
+        mock_http.request.return_value = {"items": [], "total": 0}
+        result = service.list("user_1")
+        assert result.has_more is False
+
 
 class TestCancel:
     def test_returns_subscription_cancel(
@@ -184,3 +210,7 @@ class TestCancel:
     def test_empty_subscription_id_raises(self, service: SubscriptionService) -> None:
         with pytest.raises(ValueError, match="subscription_id is required"):
             service.cancel("")
+
+    def test_whitespace_subscription_id_raises(self, service: SubscriptionService) -> None:
+        with pytest.raises(ValueError, match="subscription_id is required"):
+            service.cancel("  ")
