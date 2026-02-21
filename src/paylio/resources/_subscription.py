@@ -29,4 +29,6 @@ class PaginatedList(PaylioObject):
     @property
     def has_more(self) -> bool:
         """Whether there are more pages available."""
-        return self.get("page", 1) < self.get("total_pages", 1)
+        page: int = self.get("page", 1)
+        total_pages: int = self.get("total_pages", 1)
+        return page < total_pages
