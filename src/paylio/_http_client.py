@@ -15,7 +15,7 @@ from paylio._error import (
 )
 from paylio._version import VERSION
 
-DEFAULT_BASE_URL = "https://api.paylio.dev/flying/v1"
+DEFAULT_BASE_URL = "https://api.paylio.pro/flying/v1"
 DEFAULT_TIMEOUT = 30.0
 
 

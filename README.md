@@ -1,6 +1,6 @@
 # Paylio Python SDK
 
-Python client library for the [Paylio](https://paylio.dev) API.
+Python client library for the [Paylio](https://paylio.pro) API.
 
 ## Installation
 
@@ -47,7 +47,7 @@ with paylio.PaylioClient("sk_live_xxx") as client:
 ### Custom Base URL
 
 ```python
-client = paylio.PaylioClient("sk_test_xxx", base_url="https://api.paylio.dev/flying/v1")
+client = paylio.PaylioClient("sk_test_xxx", base_url="https://api.paylio.pro/flying/v1")
 ```
 
 ### Error Handling
