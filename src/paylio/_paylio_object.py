@@ -24,10 +24,20 @@ class PaylioObject(dict):  # type: ignore[type-arg]
 
     @staticmethod
     def _wrap(value: Any) -> Any:
+        if isinstance(value, PaylioObject):
+            return value
         if isinstance(value, dict):
             return PaylioObject(value)
         if isinstance(value, list):
-            return [PaylioObject(item) if isinstance(item, dict) else item for item in value]
+            wrapped = []
+            for item in value:
+                if isinstance(item, PaylioObject):
+                    wrapped.append(item)
+                elif isinstance(item, dict):
+                    wrapped.append(PaylioObject(item))
+                else:
+                    wrapped.append(item)
+            return wrapped
         return value
 
     def __getattribute__(self, name: str) -> Any:
