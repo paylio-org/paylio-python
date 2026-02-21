@@ -47,10 +47,7 @@ class TestPaylioError:
     def test_repr_format(self) -> None:
         err = PaylioError(message="fail", http_status=500, code="internal")
         r = repr(err)
-        assert r == (
-            "PaylioError(message='fail', "
-            "http_status=500, code='internal')"
-        )
+        assert r == ("PaylioError(message='fail', http_status=500, code='internal')")
 
     def test_defaults(self) -> None:
         err = PaylioError()
@@ -72,22 +69,16 @@ class TestErrorSubclasses:
     """Each subclass inherits PaylioError and can carry all attributes."""
 
     @pytest.mark.parametrize("cls", ALL_SUBCLASSES)
-    def test_subclass_is_paylio_error(
-        self, cls: type[PaylioError]
-    ) -> None:
+    def test_subclass_is_paylio_error(self, cls: type[PaylioError]) -> None:
         assert issubclass(cls, PaylioError)
 
     @pytest.mark.parametrize("cls", ALL_SUBCLASSES)
-    def test_subclass_catchable_as_paylio_error(
-        self, cls: type[PaylioError]
-    ) -> None:
+    def test_subclass_catchable_as_paylio_error(self, cls: type[PaylioError]) -> None:
         with pytest.raises(PaylioError):
             raise cls(message="test")
 
     @pytest.mark.parametrize("cls", ALL_SUBCLASSES)
-    def test_subclass_carries_all_attributes(
-        self, cls: type[PaylioError]
-    ) -> None:
+    def test_subclass_carries_all_attributes(self, cls: type[PaylioError]) -> None:
         err = cls(
             message="err",
             http_status=400,
@@ -104,8 +95,6 @@ class TestErrorSubclasses:
         assert err.code == "c"
 
     @pytest.mark.parametrize("cls", ALL_SUBCLASSES)
-    def test_subclass_str_is_message(
-        self, cls: type[PaylioError]
-    ) -> None:
+    def test_subclass_str_is_message(self, cls: type[PaylioError]) -> None:
         err = cls(message="hello")
         assert str(err) == "hello"
