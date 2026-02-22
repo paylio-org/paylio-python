@@ -135,28 +135,9 @@ jobs:
           TAG="v${{ needs.detect-version.outputs.version }}"
           gh release create "$TAG" --title "$TAG" --generate-notes --target main
 
-  publish-testpypi:
-    name: TestPyPI
-    needs: [release]
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/paylio
-    steps:
-      - uses: actions/download-artifact@v7
-        with:
-          name: dist-packages
-          path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          attestations: true
-
-  publish-pypi:
+  publish:
     name: PyPI
-    needs: [publish-testpypi]
+    needs: [release]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
