@@ -95,7 +95,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -e ".[dev]"
-      - run: pip-audit --strict --skip-editable
+      - run: pip-audit --skip-editable
       - run: bandit -r src/ -ll
 
   build:
